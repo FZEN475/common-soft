@@ -1,6 +1,6 @@
 services:
   ansible:
-    image: ghcr.io/fzen475/ansible-image:latest
+    image: ghcr.io/fzen475/ansible-image:dev
     container_name: ansible-soft
     env_file: ./.env
     environment:
