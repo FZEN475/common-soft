@@ -1,0 +1,18 @@
+---
+- hosts: servers
+  name: Install soft for servers
+  become: true
+  tasks:
+    - name: Common.
+      ansible.builtin.include_tasks: ./_0_common/_0_install.yaml
+    - name: Install docker/swarm.
+      ansible.builtin.include_tasks: ./_1_swarm/_0_install.yaml
+    - name: Install kubeadm .
+      ansible.builtin.include_tasks: ./_2_kubeadm/_0_install.yaml
+
+- hosts: control_all
+  name: Install soft for control_all
+  become: true
+  tasks:
+    - name: Install keepalived .
+      ansible.builtin.include_tasks: ./_3_keepalived/_0_install.yaml

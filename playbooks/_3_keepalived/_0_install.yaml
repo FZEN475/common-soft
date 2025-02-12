@@ -1,0 +1,29 @@
+---
+
+
+- name: Allow binding non-local IPv4
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: "1"
+    reload: true
+    state: present
+
+- name: Install keepalived.
+  ansible.builtin.include_tasks: ./_0_utility/apt.yaml
+  vars:
+    gpg_key: []
+    repository: []
+    list:
+      - 'keepalived'
+
+- name: Copy config keepalived
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.file', '/source/config/keepalived.conf') }}"
+    dest: /etc/keepalived/keepalived.conf
+    force: true
+
+- name: Restart keepalived
+  ansible.builtin.service:
+    name: keepalived
+    state: restarted
+    enabled: true
