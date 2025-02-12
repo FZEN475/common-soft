@@ -1,7 +1,6 @@
 ---
 - hosts: servers
   name: Wait for system to become reachable in all servers
-  gather_facts: false
   tasks:
 
     - name: Wait for system to become reachable
