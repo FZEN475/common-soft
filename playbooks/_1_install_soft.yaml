@@ -1,0 +1,40 @@
+---
+- hosts: servers
+  name: Install soft for servers
+  become: true
+  tasks:
+    - name: Resizing disk after changes in terraform.
+      ansible.builtin.include_tasks:
+        file: ./_0_utility/disk_resize.yaml
+    - name: Install pip3.
+      ansible.builtin.include_tasks: ./_0_utility/apt.yaml
+      vars:
+        gpg_key: []
+        repository: []
+        list:
+          - 'python3-pip'
+    - name: Installing modules for python\ansible to work with kubernetes and docker
+      ansible.builtin.pip:
+        name:
+          - openshift
+          - pyyaml
+          - kubernetes
+          - docker
+          - jsondiff
+    - name: Allow forward IPv4
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        reload: true
+        state: present
+    - name: Install docker/swarm.
+      ansible.builtin.include_tasks: ./_1_swarm/_0_install.yaml
+    - name: Install kubeadm .
+      ansible.builtin.include_tasks: ./_2_kubeadm/_0_install.yaml
+
+- hosts: control_all
+  name: Install soft for control_all
+  become: true
+  tasks:
+    - name: Install keepalived .
+      ansible.builtin.include_tasks: ./_3_keepalived/_0_install.yaml
