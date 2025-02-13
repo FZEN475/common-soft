@@ -1,6 +1,6 @@
 ---
 - name: Install kubeadm.
-  ansible.builtin.include_tasks: ./_0_utility/apt.yaml
+  ansible.builtin.include_tasks: /source/playbooks/library/apt.yaml
   vars:
     gpg_key:
       - "https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key"
