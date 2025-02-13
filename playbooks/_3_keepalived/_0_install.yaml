@@ -9,7 +9,7 @@
     state: present
 
 - name: Install keepalived.
-  ansible.builtin.include_tasks: ./_0_utility/apt.yaml
+  ansible.builtin.include_tasks: /source/playbooks/library/apt.yaml
   vars:
     gpg_key: []
     repository: []
