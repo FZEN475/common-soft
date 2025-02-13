@@ -63,33 +63,27 @@ control_all
 | keepalived | kubernetes      | Виртуальный ip для высокой доступности |
 
 
-## Подготовка
-### Требования
+## Dependency
 | Дополнительно | Значение                                              | Comment |
 |:--------------|:------------------------------------------------------|:--------|
 | Образ         | [ansible](https://github.com/FZEN475/ansible-image)   |         |
 | Библиотеки    | [Library](https://github.com/FZEN475/ansible-library) |         |
 
-## Установка
-Запустить docker-compose.yml
+### Stages
+* [Общее](https://github.com/FZEN475/common-soft/blob/05c58c7e3d0c3a574b7ed18423365080d062e437/playbooks/_1_install_soft.yaml#L6-L29)
+* 
+* [Настройка containerd](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)
+- [allow forward IPv4](https://github.com/FZEN475/common-soft/blob/05c58c7e3d0c3a574b7ed18423365080d062e437/playbooks/_3_keepalived/_0_install.yaml#L4-L9)
+- [config.toml](https://github.com/FZEN475/common-soft/blob/main/config/config.toml)
+  - [SystemdCgroup = true](https://github.com/FZEN475/common-soft/blob/05c58c7e3d0c3a574b7ed18423365080d062e437/config/config.toml#L139) для использования systemd в качестве драйвера cgroup для среды выполнения контейнера.  
 
-### Дополнительно
+[kubeadm](https://github.com/FZEN475/common-soft/blob/main/playbooks/_2_kubeadm/_0_install.yaml)
+- [Установка helm через ссылку.](https://github.com/FZEN475/common-soft/blob/05c58c7e3d0c3a574b7ed18423365080d062e437/playbooks/_2_kubeadm/_0_install.yaml#L15-L19)
 
-[Настройка containerd](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)
-- [allow forward IPv4]()ССЫЛКА!
-- [config.toml]() ССЫЛКА!
-  - [SystemdCgroup = true]()ССЫЛКА! для использования systemd в качестве драйвера cgroup для среды выполнения контейнера.  
+[keepalived](https://github.com/FZEN475/common-soft/blob/main/playbooks/_3_keepalived/_0_install.yaml)
+- [allow binding non-local IPv4](https://github.com/FZEN475/common-soft/blob/05c58c7e3d0c3a574b7ed18423365080d062e437/playbooks/_3_keepalived/_0_install.yaml#L4-L9).
 
-AppArmor
-- Бывает, что после установки не монтируются виртуальные диски. [Решение]()ССЫЛКА!  
-
-helm
-- [Установка через ссылку.]()ССЫЛКА! Там более новая версия.
-
-keepalived
-- [allow binding non-local IPv4]()ССЫЛКА!
-
-### Ошибки
+### Troubleshoots
 
 <!DOCTYPE html>
 <table>
@@ -100,17 +94,9 @@ keepalived
     </tr>
   </thead>
   <tr>
-      <td>Из контейнера не определяются имена серверов без домена.</td>
+      <td>Бывает, что после установки не монтируются виртуальные диски.</td>
       <td>
-На хосте докера:  
-/etc/docker/daemon.json
-
-```json
-{
-  "insecure-registries":["192.168.2.10:5000"],
-  "dns": ["192.168.2.1","8.8.8.8"]
-}
-```
+[Решение](https://github.com/FZEN475/common-soft/blob/05c58c7e3d0c3a574b7ed18423365080d062e437/playbooks/_1_swarm/_0_install.yaml#L22-L32)
 </td>
   </tr>
   <tr>
