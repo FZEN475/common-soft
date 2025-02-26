@@ -1,0 +1,16 @@
+
+
+include:
+  - project: 'library/ci'
+    # optional ref, can point to a tag or branch, if not specified the default branch of the target repository is used
+    # ref: <git ref>sd dsddF
+    file:
+      - 'root.gitlab-ci.yaml'
+    inputs:
+      test-input: "test-input1"
+      run-test: true
+
+variables:
+  CI_DEBUG_TRACE: "true"
+
+
