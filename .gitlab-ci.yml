@@ -3,7 +3,7 @@
 include:
   - project: 'library/ci'
     # optional ref, can point to a tag or branch, if not specified the default branch of the target repository is used
-    # ref: <git ref>sd dsddF
+    # ref: <git ref>sd ds
     file:
       - 'root.gitlab-ci.yaml'
     inputs:
