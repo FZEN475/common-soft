@@ -1,0 +1,67 @@
+---
+- name: Install kubeadm.
+  ansible.builtin.include_tasks: /source/playbooks/library/apt.yaml
+  vars:
+    gpg_key:
+      - "https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key"
+    repository:
+      - "deb https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /"
+    list:
+      - 'kubelet'
+      - 'kubeadm'
+      - 'kubectl'
+      - 'socat'
+
+- name: Download Helm command line tool
+  ansible.builtin.uri:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    return_content: true
+  register: helm_installer
+
+- name: Install Helm
+  ansible.builtin.command:
+    cmd: bash
+    stdin: "{{ helm_installer.content }}"
+    creates: /usr/local/bin/helm
+  environment:
+    DESIRED_VERSION: "{{ helm_version | default('') }}"
+
+- name: Check directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/tmp/cni_plugin/"
+    - "/opt/cni/bin/"
+    - "/etc/cni/net.d/"
+    - "/root/.kube/"
+    - "/etc/containerd/"
+
+- name: Download cni-plugins & calicoctl
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    decompress: true
+  with_items:
+    - {url: "https://github.com/containernetworking/plugins/releases/download/v1.6.0/cni-plugins-linux-amd64-v1.6.0.tgz", dest: "/tmp/cni-plugins.tgz", mode: "u+rwx" }
+    - {url: "https://github.com/projectcalico/calico/releases/download/v3.29.0/calicoctl-linux-amd64", dest: "/usr/bin/kubectl-calico", mode: "u+x"}
+
+- name: Extract cni-plugins
+  ansible.builtin.unarchive:
+    src: /tmp/cni-plugins.tgz
+    dest: /opt/cni/bin
+    remote_src: true
+    mode: +x
+
+- name: Copy config containerd
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.file', '/source/config/config.toml') }}"
+    dest: /etc/containerd/config.toml
+    force: true
+
+- name: Restart containerd
+  ansible.builtin.service:
+    name: containerd
+    state: restarted
+    enabled: true

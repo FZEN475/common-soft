@@ -1,0 +1,23 @@
+- name: Resizing disk after changes in terraform.
+  ansible.builtin.include_tasks: /source/playbooks/library/disk_resize.yaml
+- name: Install pip3.
+  ansible.builtin.include_tasks: /source/playbooks/library/apt.yaml
+  vars:
+    gpg_key: []
+    repository: []
+    list:
+      - 'python3-pip'
+- name: Installing modules for python\ansible to work with kubernetes and docker
+  ansible.builtin.pip:
+    name:
+      - openshift
+      - pyyaml
+      - kubernetes
+      - docker
+      - jsondiff
+- name: Allow forward IPv4
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    reload: true
+    state: present
